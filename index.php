@@ -1,6 +1,6 @@
 <?php
 // Include la classe Product e il file db.php per la connessione al database
-require_once 'product.php';
+require_once './classes/Product.php';
 require_once 'db.php';
 
 // Crea un'istanza della classe Product
@@ -239,9 +239,26 @@ $prodotti = $productClass->getAllProducts();
                             </div>
                         </div>
                     </div>
-                    <!--PRODUCTS -- JS -->
+                    <!--PRODUCTS -- PHP -->
                     <div class="col-lg-9 col-md-9">
-                        <div class="row" id="products-container"></div>
+                        <div class="row" id="products-container">
+                            <?php foreach ($prodotti as $prodotto) : ?>
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <img src="<?= $prodotto['img_url'] ?>" class="card-img-top" alt="<?= $prodotto['nome'] ?>" height="400">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?= htmlspecialchars($prodotto['nome']) ?></h5>
+                                            <p class="card-text"><?= htmlspecialchars($prodotto['descrizione']) ?></p>
+                                            <h6>€<?= number_format($prodotto['prezzo'], 2) ?></h6>
+                                            <p class="card-text">Disponibili: <?= htmlspecialchars($prodotto['quantita_disponibile']) ?></p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a href="#" class="btn btn-primary">Aggiungi al carrello</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
 
                     <!--pagination-->
