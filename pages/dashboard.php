@@ -1,3 +1,18 @@
+<?php
+// Includi il file di connessione al database
+require_once '../db.php';
+
+// Recupera il numero totale di utenti
+$stmt = $pdo->query("SELECT COUNT(*) AS total_users FROM utenti");
+$totalUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total_users'];
+
+// Recupera il numero totale di prodotti
+$stmt = $pdo->query("SELECT COUNT(*) AS total_products FROM prodotti");
+$totalProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total_products'];
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="it">
 
@@ -5,12 +20,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pannello di Controllo</title>
+    <!--bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <!--icons-->
     <script src="https://kit.fontawesome.com/45b4d175a7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" />
 
-    <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/dashboard.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -84,7 +100,7 @@
                                     <h5 class="card-title text-white mb-1">Total Users</h5>
                                 </div>
                                 <div class="card-body">
-                                    <h1 class="display-4 font-weight-bold text-primary text-center">0</h1>
+                                    <h1 class="display-4 font-weight-bold text-primary text-center"><?php echo $totalUsers; ?></h1>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +111,7 @@
                                     <h5 class="card-title text-white mb-1">Total Products</h5>
                                 </div>
                                 <div class="card-body">
-                                    <h1 id="totalProductsNumber" class="display-4 font-weight-bold text-primary text-center">0</h1>
+                                    <h1 id="totalProductsNumber" class="display-4 font-weight-bold text-primary text-center"><?php echo $totalProducts; ?></h1>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +119,7 @@
                         <div class="col-lg-4 col-md-6 p-2">
                             <div class="card border-success rounded-0">
                                 <div class="card-header bg-success rounded-0">
-                                    <h5 class="card-title text-white mb-1">Published Products</h5>
+                                    <h5 class="card-title text-white mb-1">Orders</h5>
                                 </div>
                                 <div class="card-body">
                                     <h1 id="publishedProductsNumber" class="display-4 font-weight-bold text-success text-center">0</h1>
@@ -111,6 +127,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <!--tabella-->
                     <div class="row m-2 mt-5">
@@ -125,15 +142,39 @@
                                             <th>Image</th>
                                             <th>Label</th>
                                             <th class="description">Description</th>
-                                            <th class="category">Category</th>
                                             <th>Price</th>
-                                            <th>
-                                                <button id="editModeButton" class="btn btn-secondary me-2" id="editModeButton">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                            </th>
+                                            <th>Quantity</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                    <tbody>
+                                        <?php
+                                        // Includi il file di connessione al database
+                                        require_once '../db.php';
+
+                                        // Esegui la query per recuperare i dati dalla tabella 'prodotti'
+                                        $stmt = $pdo->query("SELECT id, img_url, nome, descrizione, prezzo, quantita_disponibile FROM prodotti");
+
+                                        // Itera sui risultati della query e popola la tabella HTML
+                                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                            $productJson = htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8');
+                                            echo "<tr>";
+                                            echo "<td><img src='{$row['img_url']}' alt='Product Image' style='max-width: 100px; max-height: 100px;' /></td>";
+                                            echo "<td>{$row['nome']}</td>";
+                                            echo "<td>{$row['descrizione']}</td>";
+                                            echo "<td>{$row['prezzo']}</td>";
+                                            echo "<td>{$row['quantita_disponibile']}</td>";
+                                            echo "<td>"; // Apertura cella per pulsanti di azione
+                                            echo "<button class='btn btn-danger delete-product-btn' data-bs-toggle='modal' data-bs-target='#deleteConfirmationModal' data-product-id='{$row['id']}' onclick='setProductId({$row['id']})'><i class='bi bi-trash'></i></button>";
+                                            echo "<button class='btn btn-primary ms-2 edit-product-btn' data-bs-toggle='modal' data-bs-target='#editProductModal' data-product='$productJson'><i class='bi bi-pencil'></i></button>";
+                                            echo "</td>"; // Chiusura cella per pulsanti di azione
+                                            echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -144,7 +185,7 @@
             </div>
         </div>
     </main>
-    <!-- Modale di avviso -->
+    <!-- Modal di conferma eliminazione -->
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -155,13 +196,16 @@
                 <div class="modal-body">Sei sicuro di voler eliminare questo prodotto?</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Elimina</button>
+                    <form type="hidden" id=" deleteForm" method="post" action="elimina_prodotto.php">
+                        <input id="productId" name="productId" value="">
+                        <button type="submit" class="btn btn-danger">Elimina</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modale di conferma eliminazione avvenuta con successo -->
+    <!-- Modal di conferma eliminazione avvenuta con successo -->
     <div class="modal fade" id="deleteSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -174,7 +218,72 @@
         </div>
     </div>
 
+    <!-- Modal di modifica prodotto -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Modifica Prodotto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editProductForm" method="post" action="update_product.php">
+                    <div class="modal-body">
+                        <input type="hidden" id="editProductId" name="productId" value="">
+                        <div class="mb-3">
+                            <label for="editProductName" class="form-label">Nome Prodotto</label>
+                            <input type="text" class="form-control" id="editProductName" name="productName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProductDescription" class="form-label">Descrizione</label>
+                            <textarea class="form-control" id="editProductDescription" name="productDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProductPrice" class="form-label">Prezzo</label>
+                            <input type="text" class="form-control" id="editProductPrice" name="productPrice">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProductQuantity" class="form-label">Quantità</label>
+                            <input type="text" class="form-control" id="editProductQuantity" name="productQuantity">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Salva modifiche</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script>
+        // Funzione per impostare l'ID del prodotto da eliminare nel form di eliminazione
+        function setProductId(productId) {
+            document.getElementById('productId').value = productId;
+        }
+
+        // Funzione per popolare il modal di modifica prodotto con i dati del prodotto selezionato
+        function populateEditProductModal(product) {
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('editProductName').value = product.nome;
+            document.getElementById('editProductDescription').value = product.descrizione;
+            document.getElementById('editProductPrice').value = product.prezzo;
+            document.getElementById('editProductQuantity').value = product.quantita_disponibile;
+        }
+
+        // Aggiungi un event listener per i pulsanti di modifica prodotto
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-product-btn');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const product = JSON.parse(this.getAttribute('data-product'));
+                    populateEditProductModal(product);
+                });
+            });
+        });
+    </script>
 
 </body>
 

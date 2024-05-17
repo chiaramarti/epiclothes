@@ -2,9 +2,9 @@
 // Verifica se sono stati inviati dati dal form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Includi il file di connessione al database
-    require_once 'db.php';
+    require_once '../db.php';
     // Includi la classe Product
-    require_once 'Product.php';
+    require_once '../classes/Product.php';
 
     // Inizializza una nuova istanza della classe Product
     $product = new Product($pdo);
@@ -14,13 +14,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $productDescription = $_POST["productDescription"];
     $productPrice = $_POST["productPrice"];
     $productQuantity = $_POST["productQuantity"];
+    $productImageUrl = $_POST["productImageUrl"];
 
     // Esegui la query per aggiungere il nuovo prodotto al database
-    $stmt = $pdo->prepare("INSERT INTO prodotti (nome, descrizione, prezzo, quantita_disponibile) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$productName, $productDescription, $productPrice, $productQuantity]);
+    // Esegui la query per aggiungere il nuovo prodotto al database
+    $stmt = $pdo->prepare("INSERT INTO prodotti (nome, descrizione, prezzo, quantita_disponibile, img_url) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$productName, $productDescription, $productPrice, $productQuantity, $productImageUrl]);
 
     // Reindirizza l'utente alla pagina di successo o ad altre azioni necessarie
-    header("Location: success.php");
+    header("Location: dashboard.php");
     exit();
 }
 ?>
@@ -60,6 +62,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="productQuantity" class="form-label">Product Quantity</label>
                 <input type="text" class="form-control" id="productQuantity" name="productQuantity" required />
             </div>
+            <div class="mb-3">
+                <label for="productImageUrl" class="form-label">Product Image URL</label>
+                <input type="text" class="form-control" id="productImageUrl" name="productImageUrl" />
+            </div>
+
             <button type="submit" class="btn btn-primary">Add Product</button>
         </form>
     </div>

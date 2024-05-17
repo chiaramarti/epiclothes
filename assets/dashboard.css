@@ -127,9 +127,6 @@ body {
   transform: rotate(180deg);
 }
 
-.btn-danger, .btn-primary{
-  display: none;
-}
 
 @media (max-width: 991px) {
   .main .navbar-side {
