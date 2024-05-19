@@ -1,7 +1,11 @@
 <?php
+
 // Include la classe Product e il file db.php per la connessione al database
 require_once './classes/Product.php';
 require_once 'db.php';
+
+// Avvia la sessione
+session_start();
 
 // Crea un'istanza della classe Product
 $productClass = new Product($pdo);
@@ -33,7 +37,7 @@ $prodotti = $productClass->getAllProducts();
 </head>
 <header>
     <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="#home">
+        <a class="navbar-brand" href="index.php">
             <img src="assets/epiclothes-high-resolution-logo-transparent.left.png" class="logo" />
         </a>
         <button class="navbar-toggler bottone1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
@@ -43,7 +47,7 @@ $prodotti = $productClass->getAllProducts();
         <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
             <div class="navbar-nav m-auto">
                 <li class="nav-item"><a class="nav-link nav-link1" href="#">Home</a></li>
-                <li class="nav-item"><a class="nav-link nav-link1" href="shop.html">Shop</a></li>
+                <li class="nav-item"><a class="nav-link nav-link1" href="index.php">Shop</a></li>
                 <li class="nav-item"><a class="nav-link nav-link1" href="#">Man's</a></li>
                 <li class="nav-item"><a class="nav-link nav-link1" href="#">Women's</a></li>
                 <li class="nav-item"><a class="nav-link nav-link1" href="#">Contacts</a></li>
@@ -52,9 +56,22 @@ $prodotti = $productClass->getAllProducts();
                 <div class="nav-item">
                     <div class="icon-flex">
                         <a class="nav-link nav-link1" href="#"><i class="fa-solid fa-heart"></i></a>
-                        <a class="nav-link nav-link1" href="checkout.html"><i class="fa-solid fa-cart-shopping"></i></a>
-                        <a class="nav-link nav-link1" href="login.html"><i class="fa-solid fa-user"></i></a>
-                        <a class="nav-link nav-link1 admin" href="admin_panel.html"><i class="bi bi-ui-checks-grid"></i></a>
+                        <a class="nav-link nav-link1" href="#"><i class="fa-solid fa-cart-shopping"></i></a>
+                        <?php if (isset($_SESSION['user_id'])) : ?>
+                            <?php if ($_SESSION['ruolo'] === 'admin') : ?>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link1 admin" href="./pages/dashboard.php"><i class="bi bi-ui-checks-grid"></i></a>
+                                </li>
+                            <?php else : ?>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link1" href="./pages/logout.php"><i class="fa-solid fa-door-open"></i></a>
+                                </li>
+                            <?php endif; ?>
+                        <?php else : ?>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link1" href="./pages/login.php"><i class="fa-solid fa-user"></i></a>
+                            </li>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

@@ -55,7 +55,7 @@ $totalProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total_products'];
                         <hr />
                         <ul class="nav nav-pills flex-column mb-auto">
                             <li class="nav-item">
-                                <a href="/products.html" class="nav-link active" aria-current="page">
+                                <a href="../index.php" class="nav-link active" aria-current="page">
                                     <i class="bi bi-house-door-fill"></i> <span>Home</span>
                                 </a>
                             </li>

@@ -9,12 +9,23 @@ class User
     }
 
     // Funzione per registrare un nuovo utente
-    public function register($username, $password, $nome, $cognome, $indirizzo)
+    public function register($username, $password, $nome, $cognome, $indirizzo, $ruolo = 'user')
     {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare("INSERT INTO Utenti (username, password, nome, cognome, indirizzo) VALUES (?, ?, ?, ?, ?)");
-        return $stmt->execute([$username, $hashedPassword, $nome, $cognome, $indirizzo]);
+        $stmt = $this->db->prepare("INSERT INTO Utenti (username, password, nome, cognome, indirizzo, ruolo) VALUES (?, ?, ?, ?, ?, ?)");
+        return $stmt->execute([$username, $hashedPassword, $nome, $cognome, $indirizzo, $ruolo]);
     }
+
+    public function isAdmin($user)
+    {
+        return $user['ruolo'] === 'admin';
+    }
+
+    public function isUser($user)
+    {
+        return $user['ruolo'] === 'user';
+    }
+
 
     // Funzione per autenticare un utente
     public function login($username, $password)
