@@ -1,4 +1,13 @@
 <?php
+session_start();
+
+// Verifica se l'utente è loggato e se è un amministratore
+if (!isset($_SESSION['user_id']) || $_SESSION['ruolo'] !== 'admin') {
+    // Reindirizza l'utente alla pagina di login se non è loggato o non è un amministratore
+    header("Location: login.php");
+    exit();
+}
+
 // Verifica se sono stati inviati dati dal form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Includi il file di connessione al database
@@ -17,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $productImageUrl = $_POST["productImageUrl"];
 
     // Esegui la query per aggiungere il nuovo prodotto al database
-    // Esegui la query per aggiungere il nuovo prodotto al database
     $stmt = $pdo->prepare("INSERT INTO prodotti (nome, descrizione, prezzo, quantita_disponibile, img_url) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$productName, $productDescription, $productPrice, $productQuantity, $productImageUrl]);
 
@@ -26,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

@@ -2,6 +2,15 @@
 // Includi il file di connessione al database
 require_once '../db.php';
 
+session_start();
+
+// Verifica se l'utente è loggato e se è un amministratore
+if (!isset($_SESSION['user_id']) || $_SESSION['ruolo'] !== 'admin') {
+    // Reindirizza l'utente alla pagina di login se non è loggato o non è un amministratore
+    header("Location: login.php");
+    exit();
+}
+
 // Verifica se è stato passato un ID di prodotto
 if (isset($_POST['productId'])) {
     // Ottieni l'ID del prodotto dall'input POST
