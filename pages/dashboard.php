@@ -46,7 +46,7 @@ $totalProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total_products'];
 <body>
     <header>
         <div class="admin-header">
-            <a href="/products.html">
+            <a href="/epiclothes/">
                 <img src="../assets/epiclothes-high-resolution-logo-white-transparent1.png" alt="" />
             </a>
         </div>
